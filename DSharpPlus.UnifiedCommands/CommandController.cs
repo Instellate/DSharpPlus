@@ -29,14 +29,15 @@ public sealed class CommandController
     private readonly List<DiscordApplicationCommand> _commands = new();
     private readonly ulong[]? _guildIds;
 
-    internal static readonly Dictionary<Type, (ConverterLambda, ConversionLambda)> ConverterList = new();
+    internal static readonly Dictionary<Type, (ConverterLambda, ConversionLambda)> MessageConverterList = new();
     internal MessageFactory MessageFactory { get; init; }
     internal ApplicationFactory ApplicationFactory { get; init; }
 
     public IServiceProvider Services { get; init; }
 
     public CommandController(DiscordClient client, IServiceProvider services,
-        IReadOnlyCollection<Assembly> assemblies, string[] prefixes, ulong[]? guildIds, bool registerSlashCommands)
+        IReadOnlyCollection<Assembly> assemblies, string[] prefixes, ulong[]? guildIds, bool registerSlashCommands,
+        List<Type> messageRegisters, List<Type> interactionRegisters)
     {
         _prefixes = prefixes;
         Services = services;
@@ -76,7 +77,7 @@ public sealed class CommandController
                 }
                 else
                 {
-                    if (!ConverterList.ContainsKey(param.ConverterType))
+                    if (!MessageConverterList.ContainsKey(param.ConverterType))
                     {
                         List<Expression> expressions = new(2);
 
@@ -125,7 +126,7 @@ public sealed class CommandController
                         ConversionLambda conversionLambda = 
                             Expression.Lambda<ConversionLambda>(Expression.Block(expressions), false, resultParam).Compile();
 
-                        ConverterList.Add(param.ConverterType, (converterLambda, conversionLambda));
+                        MessageConverterList.Add(param.ConverterType, (converterLambda, conversionLambda));
                     }
                 }
             }

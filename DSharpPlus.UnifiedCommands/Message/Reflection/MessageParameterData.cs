@@ -1,6 +1,6 @@
 namespace DSharpPlus.UnifiedCommands.Message.Internals;
 
-internal class MessageParameterData
+public class MessageParameterData
 {
     public Type Type { get; set; } = null!;
     public Type ConverterType { get; set; } = null!;

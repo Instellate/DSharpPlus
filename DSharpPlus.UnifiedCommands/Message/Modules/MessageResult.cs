@@ -1,6 +1,6 @@
 using DSharpPlus.Entities;
 
-namespace DSharpPlus.UnifiedCommands.Message;
+namespace DSharpPlus.UnifiedCommands.Message.Modules;
 
 /// <summary>
 /// The primary class used for MessageResult.

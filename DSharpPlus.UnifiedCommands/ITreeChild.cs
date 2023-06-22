@@ -1,6 +1,6 @@
 namespace DSharpPlus.UnifiedCommands.Internals.Trees;
 
-internal interface ITreeChild<T>
+public interface ITreeChild<T>
 {
     internal (ITreeChild<T>, int) Traverse(ReadOnlySpan<char> span, int depth = 0);
 

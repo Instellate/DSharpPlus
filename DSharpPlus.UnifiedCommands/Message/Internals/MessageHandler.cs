@@ -13,7 +13,7 @@ namespace DSharpPlus.UnifiedCommands.Message.Internals;
 
 internal class MessageHandler
 {
-    private MessageModule _module = null!; // Will be set by the factory.
+    private IMessageModule _module = null!; // Will be set by the factory.
     private DiscordMessage? _newMessage;
     private readonly DiscordMessage _message;
     private readonly MessageMethodData _data;
@@ -36,45 +36,40 @@ internal class MessageHandler
         _conditionBuilders = conditionBuilders;
     }
 
-    internal async Task TurnResultIntoActionAsync(IMessageResult result)
+    internal async Task<DiscordMessage?> TurnResultIntoActionAsync(IMessageResult result)
     {
         switch (result.Type)
         {
-            case MessageResultType.Empty: return;
+            case MessageResultType.Empty: return null;
             case MessageResultType.Reply:
                 result.Builder.WithReply(_module.Message.Id);
 
                 _newMessage = await _module.Message.Channel.SendMessageAsync(result.Builder);
-                _module.NewestMessage = _newMessage;
-                break;
+                return _newMessage;
             case MessageResultType.NoMentionReply:
                 result.Builder.WithReply(_module.Message.Id, true);
 
                 _newMessage = await _module.Message.Channel.SendMessageAsync(result.Builder);
-                _module.NewestMessage = _newMessage;
-                break;
+                return _newMessage;
             case MessageResultType.Send:
 
                 _newMessage = await _module.Message.Channel.SendMessageAsync(result.Builder);
-                _module.NewestMessage = _newMessage;
-                break;
+                return _newMessage;
             case MessageResultType.FollowUp:
                 if (_newMessage is not null)
                 {
                     result.Builder.WithReply(_newMessage.Id);
                 }
 
-                await _module.Message.Channel.SendMessageAsync(result.Builder);
-                break;
+                return await _module.Message.Channel.SendMessageAsync(result.Builder);
             case MessageResultType.Edit:
                 if (_newMessage is not null)
                 {
                     await _newMessage.ModifyAsync(result.Builder);
                 }
-
-                break;
+                return null;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new NotImplementedException();
         }
     }
 
@@ -88,9 +83,9 @@ internal class MessageHandler
 
             MessageModuleData moduleData = _data.Module;
 
-            _module = (MessageModule)moduleData.Factory.Invoke(_scope.ServiceProvider, null);
+            _module = (IMessageModule)moduleData.Factory.Invoke(_scope.ServiceProvider, null);
             _module.Message = _message;
-            _module._handler = this;
+            _module.MessageActionDelegate = TurnResultIntoActionAsync;
             _module.Client = _client;
 
             object?[]? parameters = null;

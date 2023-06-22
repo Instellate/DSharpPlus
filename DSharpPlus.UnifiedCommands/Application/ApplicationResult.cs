@@ -6,6 +6,7 @@ public class ApplicationResult : IApplicationResult
 {
     public ApplicationResultType Type { get; set; }
     public List<DiscordEmbed>? Embeds { get; set; }
+    public List<DiscordComponent>? Components { get; set; }
     public string? Content { get; set; }
 
     public static implicit operator ApplicationResult(DiscordEmbed embed)

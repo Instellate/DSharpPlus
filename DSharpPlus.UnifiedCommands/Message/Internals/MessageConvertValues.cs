@@ -40,7 +40,7 @@ internal class MessageConvertValues
                 if (segment is ArraySegment<char> s)
                 {
                     (ConverterLambda converter, ConversionLambda conversion) =
-                        CommandController.ConverterList.GetValueOrDefault(type)!;
+                        CommandController.MessageConverterList.GetValueOrDefault(type)!;
 
                     ValueTask<IResult> taskResult = converter(_scope.ServiceProvider, _client, _message, s);
                     IResult result = await taskResult;

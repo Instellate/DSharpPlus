@@ -1,4 +1,4 @@
-namespace DSharpPlus.UnifiedCommands.Message;
+namespace DSharpPlus.UnifiedCommands.Message.Modules;
 
 /// <summary>
 /// Tells the register that a parameter should get rest of the arguments.

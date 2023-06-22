@@ -3,7 +3,7 @@ using DSharpPlus.Entities;
 namespace DSharpPlus.UnifiedCommands.Message;
 
 /// <summary>
-/// This is only used in middlewares
+/// This is only used in conditions
 /// </summary>
 public class MessageContext
 {

@@ -1,30 +1,28 @@
 using DSharpPlus.Entities;
-using DSharpPlus.UnifiedCommands.Message.Internals;
 
-namespace DSharpPlus.UnifiedCommands.Message;
+namespace DSharpPlus.UnifiedCommands.Message.Modules;
 
 /// <summary>
 /// The MessageModule. Abstract class used for building message commands.
 /// </summary>
-public abstract class MessageModule
+public abstract class MessageModule : IMessageModule
 {
     public static readonly IMessageResult EmptyResult = new MessageResult { Type = MessageResultType.Empty };
 
-    internal MessageHandler _handler = null!; // Will be set by the factory.
-
-    public DiscordMessage Message { get; internal set; } = null!;
+    public DiscordMessage Message { get; set; } = null!;
     /// <summary>
     /// The latest message that have been received and processed by PostAsync.
     /// </summary>
     public DiscordMessage? NewestMessage { get; internal set; } = null;
-    public DiscordClient Client { get; internal set; } = null!;
+    public DiscordClient Client { get; set; } = null!;
+    public MessageActionDelegate MessageActionDelegate { get; set; } = null!;
 
     /// <summary>
     /// Performs a action without needing to return.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns></returns>
-    protected Task PostAsync(IMessageResult result) => _handler.TurnResultIntoActionAsync(result);
+    protected Task PostAsync(IMessageResult result) => MessageActionDelegate(result);
 
     /// <summary>
     /// Sets a result to reply on action.
